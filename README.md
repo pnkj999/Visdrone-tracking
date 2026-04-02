@@ -9,7 +9,7 @@ This pipeline bridges state-of-the-art detection and classic computer vision tec
 
 ---
 # Detector
-first we have used finetuned diffrent detectors to detect the objects in the frame and compared with baseline pretrained yolov8s(640x640 huggingface) . At the time of training we kept img resolution as 960px to detect small objects while at inference we took default 640px for fast inference.
+first we have used coco finetuned weights and finetuned on visdrone train dataset for diffrent detectors to detect the objects in the frame and compared with baseline pretrained yolov8s(640x640 huggingface) . At the time of training we kept img resolution as 960px to detect small objects while at inference we took default 640px for fast inference.
 
 
              precision recall mAP50 mAP50-95
