@@ -1,0 +1,7 @@
+path: /home/corsair/projects/visdrone/dataset_yolo
+train: images/train # train images
+val: images/val # val images from converted VisDrone-MOT-val sequences
+
+# Classes
+names:
+  0: person
