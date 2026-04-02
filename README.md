@@ -3,12 +3,22 @@
 This repository contains an advanced, highly-optimized tracking pipeline specifically designed for the **VisDrone dataset**, which features extreme altitude drone footage, dense crowds, and sub-20 pixel pedestrian targets.
 
 ### Why This Pipeline Exists
-Standard YOLO inference (`imgsz=640` or even `imgsz=1280`) systematically fails to recall tiny pedestrians from 4k/1080p drone footage. Furthermore, standard tracking algorithms (like uncompensated ByteTrack) fragment IDs when the drone pans or tilts quickly.
+Standard YOLO inference (`imgsz=640`) systematically fails to recall tiny pedestrians from 4k/1080p drone footage. Furthermore, standard tracking algorithms (like uncompensated ByteTrack) fragment IDs when the drone pans or tilts quickly.
 
 This pipeline bridges state-of-the-art detection and classic computer vision techniques to achieve robust tracking where standard trackers fail.
 
 ---
+# Detector
+first we have used finetuned diffrent detectors to detect the objects in the frame and compared with baseline pretrained yolov8s(640x640 huggingface) . At the time of training we kept img resolution as 960px to detect small objects while at inference we took default 640px for fast inference.
+            precision recall mAP50 mAP50-95
+1. YOLOv26s .62         .58    .58    .25
+2. YOLOv8s  .59         .57    .55    .22
+3. yolov8n  .61         .58    .57    .22
+4. huggingface 
+yolov8s       .58        .38    .43    .20  
 
+
+by the qualitative analysis we went through yolov26s for detection as it also have sahi implementation in it. 
 ## 1. Smart Tiling Detection (SAHI)
 We implemented **Smart Tiling** using SAHI (Slicing Aided Hyper Inference) to dynamically adapt to the drone's altitude on a frame-by-frame basis:
 - **Pass 1:** Fast, full-frame `1280px` YOLO inference.
@@ -28,14 +38,6 @@ Unlike naive implementations that warp detections (which desynchronizes bounding
 
 ---
 
-## Performance & Detection Trade-off Table
-
-| Technique | Precision | Recall | Speed (FPS) | Object Size Best For |
-| :--- | :--- | :--- | :--- | :--- |
-| **YOLO Base (640px)** | High | Extremely Low | **~60+** | Large/Close-up |
-| **YOLO Base (1280px)** | High | Moderate | ~30 | Medium |
-| **Smart Tiling (2x2)** | Moderate | High | ~2-5 | Small (Drones) |
-| **Extreme Tiling (4x4)** | Low/Moderate | **Maximized** | ~0.5-1 | Microscopic |
 
 *Note: As tiling becomes more aggressive, Recall dramatically improves at the cost of bounding-box deduplication (Precision drop) and computational load (FPS drop). The Smart Tiling logic implemented in this repository perfectly balances this dynamically.*
 
@@ -52,4 +54,4 @@ conda run -n mambamot python orb+ecctracking.py \
   --model yolo26s.pt
 ```
 
-The script will automatically overlay the live pipeline FPS speed onto the output video file.
+The script will automatically overlay the live pipeline FPS speed onto the output video file. We have used rtx 5090 for all our experiment with VRAM 32 gb and recorded AVG fps of 9.67
